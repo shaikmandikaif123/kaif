@@ -1,0 +1,29 @@
+<p>exercise works!</p>
+<form (ngSubmit)="onSubmit()">
+    <div>
+      <label>ID</label>
+      <input type="text" [(ngModel)]="exercise.id" name="id" required>
+    </div>
+    <div>
+      <label>Name</label>
+      <input type="text" [(ngModel)]="exercise.name" name="name" required>
+    </div>
+    <div>
+      <label>Weight</label>
+      <input type="number" [(ngModel)]="exercise.weight" name="weight" required>
+    </div>
+    <div>
+      <label>Sets</label>
+      <input type="number" [(ngModel)]="exercise.sets" name="sets" required>
+    </div>
+    <div>
+      <label>Reps</label>
+      <input type="number" [(ngModel)]="exercise.reps" name="reps" required>
+    </div>
+    <div>
+      <label>Duration (Minutes)</label>
+      <input type="number" [(ngModel)]="exercise.durationMinutes" name="durationMinutes" required>
+    </div>
+    <button type="submit">Submit</button>
+  </form>
+  
