@@ -1,0 +1,41 @@
+It looks like users in Lille, Paris are reporting an issue where certain documents, specifically CER and P10, are not being classified correctly in the index within a transaction. The key points from their report are:
+
+1. Inconsistent Classification:
+
+Documents with the same certificate type (CER) are being associated with different IMEX reference numbers, but they are not indexed consistently.
+
+Some transactions have the CER document correctly indexed, while others do not.
+
+
+
+2. Missing Entries in the Index:
+
+The CER document is not appearing in the index when expected.
+
+Users are requesting that it be properly added to ensure consistency.
+
+
+
+
+Possible Causes:
+
+Indexing Rules Issue: The system might not be recognizing CER as a valid document type in certain cases.
+
+Metadata Mapping Error: If the indexing relies on metadata, there might be a missing or incorrect mapping for CER documents.
+
+Transaction-Specific Behavior: The classification logic may vary based on IMEX reference numbers, leading to inconsistent results.
+
+
+Next Steps:
+
+Investigate how documents are indexed and classified within transactions.
+
+Check whether the CER document type is missing in any configuration files or databases.
+
+Review past transactions to identify patterns in when CER is included or missing.
+
+Implement fixes or rules to ensure CER is always indexed properly.
+
+
+Would you like help troubleshooting the indexing process?
+
