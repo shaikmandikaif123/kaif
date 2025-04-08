@@ -39,3 +39,26 @@ Implement fixes or rules to ensure CER is always indexed properly.
 
 Would you like help troubleshooting the indexing process?
 
+
+
+
+
+SELECT 
+    d.label AS deal_name,
+    k.name AS keyword_name,
+    c.label AS category_name,
+    bl.business_line AS business_line,
+    e.noc_label AS entity,
+    s.context AS step_name,
+    imx.step_ref AS imex_label
+FROM keywords k
+JOIN categories c ON k.category_id = c.id
+JOIN step_controls sc ON k.step_control_id = sc.id
+JOIN steps s ON sc.step_id = s.id
+JOIN deals d ON s.deal_id = d.id
+JOIN business_line bl ON k.business_line_id = bl.id
+JOIN entity e ON k.entity_code = e.ADC  -- Replace ADC with actual join key if different
+LEFT JOIN imex_steps imx ON imx.step_type_id = s.id  -- This depends on how imex_steps links to steps
+WHERE 
+    k.name = 'BYBLOS BANK'
+    AND bl.business_line IN ('GTPS', 'OPER', 'CDN', 'STANDARD');
