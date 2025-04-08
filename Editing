@@ -42,6 +42,46 @@ Would you like help troubleshooting the indexing process?
 
 
 
+SELECT 
+    d.deal_id,
+    d.deal_name,
+    id.imex_id,
+    sc.control_id,
+    s.step_id,
+    c.category_name,
+    k.keyword,
+    bl.business_line_name,
+    e.entity_name
+FROM trade_finance_compliance_management.deals d
+LEFT JOIN trade_finance_compliance_management.imex_deals id 
+    ON d.deal_id = id.deal_id
+LEFT JOIN trade_finance_compliance_management.steps s 
+    ON d.deal_id = s.deal_id
+LEFT JOIN trade_finance_compliance_management.step_controls sc 
+    ON s.step_id = sc.step_id
+LEFT JOIN embargo_check.categories c 
+    ON d.category_id = c.category_id -- assumed
+LEFT JOIN embargo_check.keywordsk k 
+    ON d.keyword_id = k.keyword_id -- assumed
+LEFT JOIN access_management.business_line bl 
+    ON d.business_line_id = bl.business_line_id -- assumed
+LEFT JOIN access_management.entity e 
+    ON d.entity_id = e.entity_id -- assumed
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 SELECT 
     d.label AS deal_name,
