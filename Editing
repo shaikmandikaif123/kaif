@@ -175,3 +175,25 @@ They are asking for clarification or confirmation:
 Is "250-22" truly Kota Lambai?
 
 If not, what is the correct vessel name for that number?
+
+
+
+
+
+
+SELECT 
+    k.name,
+    k.created_date
+FROM 
+    embargo_check.keywords k
+JOIN 
+    trade_finance_compliance_management.step_controls sc 
+    ON k.step_control_id = sc.id
+JOIN 
+    trade_finance_compliance_management.steps s 
+    ON sc.step_id = s.id
+JOIN 
+    trade_finance_compliance_management.deals d 
+    ON s.deal_id = d.id
+WHERE 
+    d.id IN (424899, 473298);
