@@ -102,3 +102,76 @@ LEFT JOIN imex_steps imx ON imx.step_type_id = s.id  -- This depends on how imex
 WHERE 
     k.name = 'BYBLOS BANK'
     AND bl.business_line IN ('GTPS', 'OPER', 'CDN', 'STANDARD');
+🤣
+
+
+
+
+
+
+
+
+
+
+Explanation of the Situation:
+
+1. Voyage record issue:
+
+There's a voyage entry (linked to reference: 000140-01-0637369-POA001) that shows the vessel identifier as "250-22".
+
+
+
+2. Lookup result:
+
+When searching for "250-22", it shows the vessel name as:
+
+> "Kota Lambai IMO 9351024 Singapore Formerly known as Yard No.C4250-22 Dalian New (1 Apr 2005 to 1 Apr 2005)"
+
+
+
+This implies "250-22" is linked to Kota Lambai, with IMO 9351024.
+
+
+
+3. Conflict in voyage data:
+
+According to the voyage record, "Kota Lambai" was shown to be at Argentina on 20 March 2025, but:
+
+The user is unable to verify this — possibly due to tracking data showing otherwise.
+
+Therefore, they doubt that Kota Lambai is actually the vessel used for this voyage.
+
+
+
+
+4. External checks failed:
+
+They’ve also tried verifying the vessel via external tracking websites.
+
+The results match the internal system (like Digitrade), but still don’t provide a satisfactory confirmation.
+
+
+
+
+
+---
+
+Conclusion / Main Issue:
+
+The user is unable to confirm the actual vessel used for the voyage marked with vessel number "250-22", because:
+
+The associated vessel name "Kota Lambai" doesn’t match the expected location on the given date (Argentina on 20 March 2025).
+
+External data sources also don’t resolve this mismatch.
+
+
+
+---
+
+What they need:
+
+They are asking for clarification or confirmation:
+
+Is "250-22" truly Kota Lambai?
+
+If not, what is the correct vessel name for that number?
