@@ -197,3 +197,21 @@ JOIN
     ON s.deal_id = d.id
 WHERE 
     d.id IN (424899, 473298);
+
+
+
+
+
+
+Subject: Clarification Needed for Vessel 250-22 – Ref: 000140-01-0637369-POA001
+
+Hi [Team Name],
+
+Could you please help confirm the correct vessel name for vessel number 250-22 under voyage 000140-01-0637369-POA001?
+
+Currently, it shows as Kota Lambai (IMO 9351024), but tracking data suggests this vessel was not at Argentina on 20 March 2025, as per the voyage record. External sites show the same info as Digitrade.
+
+We’re unable to verify if Kota Lambai is the correct vessel for this number. Appreciate your help in checking and confirming the actual vessel.
+
+Thanks,
+[Your Name]
