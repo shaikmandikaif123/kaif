@@ -231,3 +231,31 @@ Could you please check and confirm the actual vessel name linked to 250-22?
 Thanks,
 [Your Name]
 
+
+
+
+
+
+
+
+
+
+select 
+    cast(sc.created_date as date) as record_date,
+    count(*) as record_count
+from 
+    trade_finance_compliance_management.step_controls sc
+join 
+    trade_finance_compliance_management.steps s on sc.step_id = s.id
+join 
+    trade_finance_compliance_management.imex_steps is2 on is2.id = s.id
+join 
+    trade_finance_compliance_management.step_types st on is2.step_type_id = st.step_type_id
+where 
+    st.label = 'Amendment'
+    and sc.document_id is not null
+    and sc.created_date >= current_date - interval '6 months'
+group by 
+    cast(sc.created_date as date)
+order by 
+    record_date desc;
