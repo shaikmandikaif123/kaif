@@ -259,3 +259,25 @@ group by
     cast(sc.created_date as date)
 order by 
     record_date desc;
+null🤣
+
+
+
+
+
+
+
+
+
+Subject: SGDocs Incident – Root Cause and Post-Mortem
+
+Hi Team,
+
+The SGDocs team has shared the root cause and a detailed post-mortem for the recent incident. You can find it here:
+
+Ticket Link: [Insert Ticket Link]
+
+Let us know if you have any questions.
+
+Best,
+[Your Name]
