@@ -415,3 +415,76 @@ GROUP BY
     k.is_true_hit, k.observation, sc.status_code, tpk.details, c2.name, ql.label
 ORDER BY
     ql.label;
+
+
+
+
+
+
+
+
+SELECT
+  e.label AS entity_base_dtr,
+  d2.label AS department_base_dtr,
+  p.label AS product_label,
+  d.label AS deal_name,
+  s.id AS step_id,
+  ss2.label AS status_label,
+  s.created_date,
+  s.created_by,
+  s.updated_date AS validated_date,
+  s.updated_by AS validated_by,
+  d.department_code,
+  d.entity_code,
+  
+  STRING_AGG(DISTINCT k.name, ', ') AS keyword_names,
+  STRING_AGG(DISTINCT c.label, ', ') AS keyword_categories,
+  
+  CASE 
+    WHEN BOOL_OR(k.is_true_hit) THEN 'NO' 
+    ELSE 'YES' 
+  END AS hit_status,
+  
+  STRING_AGG(DISTINCT k.observation, '; ') AS comments,
+  
+  CASE 
+    WHEN MAX(sc.status_code) = 'VAL' THEN 'NO' 
+    ELSE 'YES' 
+  END AS step_validation,
+  
+  MAX(tpk.details->>'bdrId') AS bdrid,
+  
+  STRING_AGG(DISTINCT c2.name, ', ') AS countries_of_companies,
+  MAX(ufa.user_form_answer_id) AS answer_id,
+  MAX(ql.label) AS question,
+  MAX(al.label) AS answer
+
+FROM trade_finance_compliance_management.steps s
+JOIN trade_finance_compliance_management.deals d ON s.deal_id = d.id
+LEFT JOIN trade_finance_compliance_management.step_controls sc ON sc.step_id = s.id
+LEFT JOIN trade_finance_compliance_management.step_statuses ss2 ON ss2.status_code = sc.status_code
+LEFT JOIN trade_finance_compliance_management.product p ON p.product_id = d.product_id
+LEFT JOIN access_management.entity e ON e.code = d.entity_code
+LEFT JOIN access_management.department d2 ON d2.code = d.department_code
+
+-- Keyword joins
+LEFT JOIN embargo_check.keywords k ON k.step_control_id = sc.id
+LEFT JOIN embargo_check.categories c ON c.id = k.category_id
+
+-- Third-party keyword
+LEFT JOIN kyc.third_party_keywords tpk ON tpk.old_keyword_id = k.id
+
+-- Country info
+LEFT JOIN kyc.group_country gc ON gc.embargo_keyword_id = k.id
+LEFT JOIN kyc.country c2 ON c2.country_id = gc.country_id
+
+-- AML answers
+LEFT JOIN aml.user_form_answers ufa ON ufa.step_control_id = sc.id
+LEFT JOIN aml.user_question_answers uqa ON uqa.user_form_answer_id = ufa.user_form_answer_id
+LEFT JOIN aml.question_labels ql ON ql.question_id = uqa.question_id AND ql.language_id = 1  -- assuming language_id = 1 for English
+LEFT JOIN aml.answer_labels al ON al.answer_id = uqa.answer_id AND al.language_id = 1
+
+GROUP BY 
+  e.label, d2.label, p.label, d.label, s.id, ss2.label,
+  s.created_date, s.created_by, s.updated_date, s.updated_by,
+  d.department_code, d.entity_code
