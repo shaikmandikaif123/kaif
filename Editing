@@ -158,6 +158,7 @@ The results match the internal system (like Digitrade), but still don’t provid
 
 Conclusion / Main Issue:
 
+
 The user is unable to confirm the actual vessel used for the voyage marked with vessel number "250-22", because:
 
 The associated vessel name "Kota Lambai" doesn’t match the expected location on the given date (Argentina on 20 March 2025).
@@ -281,3 +282,66 @@ Let us know if you have any questions.
 
 Best,
 [Your Name]
+
+
+
+
+
+
+
+
+SELECT
+    e.label AS entity_base_dtr,
+    d2.label AS department_base_dtr,
+    p.label AS product_label,
+    d.label AS deal_name,
+    s.id AS step_id,
+    ss2.label AS status_label,
+    s.created_date,
+    s.created_by,
+    s.updated_date AS validated_date,
+    s.updated_by AS validated_by,
+    d.department_code,
+    d.entity_code,
+    k.name AS keyword_name,
+    c.label AS keyword_category,
+    CASE 
+        WHEN k.is_true_hit = 'true' THEN 'NO' 
+        ELSE 'YES' 
+    END AS hit,
+    k.observation AS comment,
+    CASE 
+        WHEN sc.status_code = 'VAL' THEN 'NO' 
+        ELSE 'YES' 
+    END AS step_validation,
+    tpk.details AS bdrid,
+    c2.name AS countries_of_companies,
+    ufa.user_form_answer_id AS answer,
+    ql.label AS question,
+    al.label AS answer
+FROM trade_finance_compliance_management.deals d
+JOIN trade_finance_compliance_management.steps s ON d.id = s.deal_id
+JOIN trade_finance_compliance_management.step_controls sc ON s.id = sc.step_id
+JOIN trade_finance_compliance_management.step_statuses ss2 ON sc.status_code = ss2.status_code
+JOIN trade_finance_compliance_management.products p ON d.product_id = p.product_id
+JOIN access_management.entity e ON d.entity_code = e.code
+JOIN access_management.department d2 ON d.department_code = d2.code
+JOIN embargo_check.keywords k ON k.step_control_id = sc.id
+JOIN embargo_check.categories c ON k.category_id = c.id
+JOIN kyc."groups" g ON g.step_control_id = sc.id
+JOIN kyc.third_party_keywords tpk ON tpk.group_id = g.group_id
+JOIN kyc.group_country gc ON g.group_id = gc.group_id
+JOIN kyc.country c2 ON gc.country_id = c2.country_id
+JOIN aml.user_form_answers ufa ON sc.id = ufa.step_control_id
+JOIN aml.forms f ON ufa.form_id = f.form_id
+JOIN aml.form_questions fq ON f.form_id = fq.form_id
+JOIN aml.question_labels ql ON fq.question_id = ql.question_id
+JOIN aml.user_question_answers uqa ON ufa.user_form_answer_id = uqa.user_form_answer_id
+JOIN aml.answer_labels al ON uqa.answer_id = al.answer_id
+WHERE
+    d.created_date >= '2025-02-01'
+    AND d.created_date < '2025-05-01'
+    AND d.business_line_id IN (1, 3, 5, 6)
+    AND ss2.status_code = 'VAL'
+    AND d.entity_code IN ('017', '015', '014', '013', '012', '011', '008')
+    AND sc.is_active = true;
