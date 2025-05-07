@@ -248,3 +248,106 @@ WHERE
 
 GROUP BY d.id, qagg.questions, aagg.answers, kagg.keyword_names, kagg.keyword_categories,
          kagg.hit, kagg.comments, ragg.company_role_codes, ragg.individual_role_codes, cagg.countries_of_companies;
+
+
+
+
+
+SELECT
+  d.id AS deal_id,
+  MAX(e.label) AS entity_base_dtr,
+  MAX(d2.label) AS department_base_dtr,
+  MAX(p.label) AS product_label,
+  MAX(d.label) AS deal_name,
+  MAX(st.label) AS step_name,
+  MAX(ss2.label) AS status_code,
+  MAX(a.created_date) AS created_date,
+  MAX(a.created_by) AS created_by,
+  MAX(a.updated_date) AS validated_date,
+  MAX(a.updated_by) AS validated_by,
+  MAX(d.department_code) AS department_code,
+  MAX(d.entity_code) AS entity_code,
+
+  -- Keywords
+  kagg.keyword_names,
+  kagg.keyword_categories,
+  kagg.hit,
+  kagg.comments,
+
+  -- Roles
+  ragg.company_role_codes,
+  ragg.individual_role_codes,
+
+  -- Validation
+  CASE WHEN MAX(sc.status_code) = 'VAL' THEN 'YES' ELSE 'NO' END AS step_validation,
+  MAX(tpk.details ->> 'bdrId') AS bdrid,
+
+  -- Countries
+  cagg.countries_of_companies,
+
+  -- Specific question answers
+  MAX(CASE WHEN q1.label ILIKE 'military%' THEN al.label END) AS military,
+  MAX(CASE WHEN q1.label ILIKE 'potential discriminatory clause%' THEN al.label END) AS potential_discriminatory_clause,
+  MAX(CASE WHEN q1.label ILIKE 'dual goods%' THEN al.label END) AS dual_goods,
+  MAX(CASE WHEN q1.label ILIKE 'other sensitive goods%' THEN al.label END) AS other_sensitive_goods
+
+FROM trade_finance_compliance_management.deals d
+JOIN trade_finance_compliance_management.steps a ON d.id = a.deal_id
+JOIN trade_finance_compliance_management.step_controls sc ON sc.step_id = a.id
+JOIN trade_finance_compliance_management.step_statuses ss2 ON ss2.status_code = sc.status_code
+JOIN trade_finance_compliance_management.imex_steps is2 ON is2.id = a.id
+JOIN trade_finance_compliance_management.step_types st ON is2.step_type_id = st.step_type_id
+JOIN trade_finance_compliance_management.products p ON d.product_id = p.product_id
+JOIN access_management.entity e ON d.entity_code = e.code
+JOIN access_management.department d2 ON d.department_code = d2.code
+
+-- Question + Answer
+LEFT JOIN anl.user_form_answers ufa ON ufa.step_control_id = sc.id
+LEFT JOIN anl.user_question_answers uqa ON ufa.user_form_answer_id = uqa.user_form_answer_id
+LEFT JOIN anl.question_labels q1 ON uqa.question_id = q1.question_id
+LEFT JOIN anl.answer_labels al ON uqa.answer_id = al.answer_id
+
+-- Keywords
+LEFT JOIN LATERAL (
+  SELECT
+    STRING_AGG(DISTINCT k.name, ', ') AS keyword_names,
+    STRING_AGG(DISTINCT c.label, ', ') AS keyword_categories,
+    CASE WHEN BOOL_OR(k.is_true_hit) THEN 'YES' ELSE 'NO' END AS hit,
+    STRING_AGG(DISTINCT k.observation, ' ') AS comments
+  FROM embargo_check.keywords k
+  LEFT JOIN embargo_check.categories c ON k.category_id = c.id
+  WHERE k.step_control_id = sc.id
+) kagg ON TRUE
+
+-- Roles
+LEFT JOIN LATERAL (
+  SELECT
+    STRING_AGG(DISTINCT g.role_code::text, ', ') AS company_role_codes,
+    STRING_AGG(DISTINCT k2.role_code, ', ') AS individual_role_codes
+  FROM kyc.groups g
+  LEFT JOIN keyword_management.keywords k2 ON k2.step_control_id = g.step_control_id
+  WHERE g.step_control_id = sc.id
+) ragg ON TRUE
+
+-- Countries
+LEFT JOIN LATERAL (
+  SELECT STRING_AGG(DISTINCT c2.name, ', ') AS countries_of_companies
+  FROM kyc.groups g2
+  JOIN kyc.group_country ge2 ON g2.group_id = ge2.group_id
+  JOIN kyc.country c2 ON ge2.country_id = c2.country_id
+  WHERE g2.step_control_id = sc.id
+) cagg ON TRUE
+
+-- Optional: Join to tpk for bdrId
+LEFT JOIN kyc.third_party_keywords tpk ON tpk.group_id = g.group_id
+
+WHERE
+  d.business_line_id IN (1, 3, 5, 6)
+  AND d.entity_code IN ('017', '015', '014', '013', '012', '011', '008')
+  AND ss2.status_code = 'VAL'
+  AND sc.is_active = TRUE
+
+GROUP BY d.id,
+         kagg.keyword_names, kagg.keyword_categories, kagg.hit, kagg.comments,
+         ragg.company_role_codes, ragg.individual_role_codes,
+         cagg.countries_of_companies;
