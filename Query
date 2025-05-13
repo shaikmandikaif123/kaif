@@ -351,3 +351,12 @@ GROUP BY d.id,
          kagg.keyword_names, kagg.keyword_categories, kagg.hit, kagg.comments,
          ragg.company_role_codes, ragg.individual_role_codes,
          cagg.countries_of_companies;
+
+
+
+SELECT 
+  jsonb_path_query(
+    shipment_track::jsonb, 
+    '$.routes[*].legs[*] ? (@.type == "POL")'
+  ) AS pol_leg
+FROM your_table_name;
