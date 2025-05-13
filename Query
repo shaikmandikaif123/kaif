@@ -360,3 +360,16 @@ SELECT
     '$.routes[*].legs[*] ? (@.type == "POL")'
   ) AS pol_leg
 FROM your_table_name;
+
+
+
+Subject: Re: [Original Subject]
+
+Dear [Recipient's Name],
+
+Thank you for bringing this to our attention. I have acknowledged the issue and raised a request with the concerned team for further action. You can track the request here: [Insert Request Link].
+
+We will keep you updated on any progress.
+
+Best regards,
+[Your Name]
