@@ -1,0 +1,8 @@
+SELECT 
+  jsonb_path_query_first(shipment_track::jsonb, 
+    '$.routes[*].legs[*] ? (@.type == "POL").location.name'
+  ) ->> '$' AS pol_location_name
+FROM your_table_name
+WHERE jsonb_path_query_first(shipment_track::jsonb, 
+    '$.routes[*].legs[*] ? (@.type == "POL").location.name'
+  ) ->> '$' = 'Yantian';
