@@ -17,3 +17,22 @@ FROM your_table_name
 WHERE jsonb_path_query_first(shipment_track::jsonb, 
     '$.routes[*].legs[*] ? (@.type == "POL").location.name'
   ) #>> '{}' = 'Yantian';
+
+
+SELECT *
+FROM trade_finance_compliance_management.deals d
+JOIN trade_finance_compliance_management.steps s ON s.deal_id = d.id
+JOIN trade_finance_compliance_management.step_controls sc ON s.id = sc.step_id
+JOIN trade_finance_compliance_management.step_statuses ss ON ss.status_code = sc.status_code
+JOIN access_management.entity e ON e.code = d.entity_code
+LEFT JOIN embargo_check.keywords k ON k.step_control_id = sc.id
+LEFT JOIN vessel_check.vessels v ON d.id = v.step_control_id
+LEFT JOIN goods.flow_description fd ON fd.step_control_id = sc.id
+WHERE (
+    (k.name ILIKE '%Hangzhou%Energy%') OR 
+    (k.name = 'Karina') OR 
+    (fd.code IN ('VEN', 'BRA'))
+)
+AND e.code IN ('TSIN', 'THK')
+AND d.business_line_id = 2
+AND d.created_at BETWEEN '2024-01-01' AND '2024-12-31';
